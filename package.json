@@ -1,0 +1,19 @@
+{
+  "name": "valenmines",
+  "version": "0.1.0",
+  "description": "Valentine's Day themed MineSweeper",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.4.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jstarry/valenmines.git"
+  },
+  "author": "jstarry",
+  "homepage": "https://valenmines.herokuapp.com"
+}

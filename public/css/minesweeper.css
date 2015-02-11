@@ -1,0 +1,159 @@
+@font-face {
+  font-family: 'LCD';
+  src: url(lcd.ttf);
+}
+
+body {
+  margin: 0px;
+}
+
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.mineBoard {
+  background: #C0C0C0;
+  display: inline-block;
+  padding: 10px;
+}
+
+.mineStatusBar {
+  position: relative;
+  background: #C0C0C0;
+  height: 50px;
+  border: 5px solid #999;
+  border-right-color: #EEE;
+  border-bottom-color: #EEE;
+  margin-bottom: 10px;
+  padding: 5px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.counter {
+  font-family: 'LCD';
+  background: black;
+  color: #F00000;
+  height: 30px;
+  width: 50px;
+  float: right;
+  padding: 4px;
+  border-radius: 1px;
+  box-sizing: border-box;
+}
+.counter:first-child {
+  float: left;
+}
+.counter span {
+  line-height: 1em;
+  font-size: 2.0em;
+  display: block;
+  margin-top: -2px;
+  margin-left: -1px;
+  font-weight: bold;
+}
+
+.mineButton {
+  position: relative;
+  margin: auto;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  background: #C0C0C0;
+  border: 3px solid #999;
+  border-left-color: #EEE;
+  border-top-color: #EEE;
+  display: inline-block;
+  cursor: default;
+}
+.mineButton.pressed {
+  border: 3px solid #999;
+  border-right-color: #EEE;
+  border-bottom-color: #EEE;
+}
+.mineButton span {
+  display: block;
+  font-size: 1.5em;
+  margin-top: -3px;
+}
+
+table.mineGrid {
+  border-spacing: 0px;
+  border: 5px solid #999;
+  border-right-color: #EEE;
+  border-bottom-color: #EEE;
+  font-family: 'Nunito', sans-serif;
+  cursor: default;
+}
+
+td.mineNode {
+  position: relative;
+  height: 30px;
+  width: 30px;
+  padding: 0px;
+  line-height: 1.9em;
+  display: inline-block;
+  background: #C0C0C0;
+  border: 3px solid #999;
+  border-left-color: #EEE;
+  border-top-color: #EEE;
+  box-sizing: border-box;
+  text-align: center;
+}
+td.mineNode.showSpace.hearted {
+  background: #C0C0C0;
+}
+td.mineNode.highlighted {
+  transition: background .5s ease-in;
+  transition: border .5s ease-in;
+  background: #E0E0E0;
+  border: 3px solid #B9B9B9;
+  border-left-color: #FFF;
+  border-top-color: #FFF;
+}
+td.mineNode.highlighted.hearted {
+  background: red;
+  border: 3px solid #AD0000;
+  border-left-color: #FFADAD;
+  border-top-color: #FFADAD;
+}
+td.mineNode.showSpace {
+  background: gray;
+  border: none;
+  border-left: 2px solid #979797;
+  border-top: 2px solid #979797;
+}
+td.mineNode.pressed {
+  border: 3px solid #999;
+  border-right-color: #EEE;
+  border-bottom-color: #EEE;
+}
+td.mineNode.one {
+  color: #0F0FFE;
+}
+td.mineNode.two {
+  color: #037903;
+}
+td.mineNode.three {
+  color: red;
+}
+td.mineNode.four {
+  color: #00007C;
+}
+td.mineNode.five {
+  color: #7C0505;
+}
+td.mineNode.six {
+  color: #147F7F;
+}
+td.mineNode.seven {
+  color: black;
+}
+td.mineNode.eight {
+  color: #999;
+}

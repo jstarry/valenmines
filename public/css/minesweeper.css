@@ -105,22 +105,8 @@ td.mineNode {
   box-sizing: border-box;
   text-align: center;
 }
-td.mineNode.showSpace.hearted {
+td.mineNode.showSpace.active {
   background: #C0C0C0;
-}
-td.mineNode.highlighted {
-  transition: background .5s ease-in;
-  transition: border .5s ease-in;
-  background: #E0E0E0;
-  border: 3px solid #B9B9B9;
-  border-left-color: #FFF;
-  border-top-color: #FFF;
-}
-td.mineNode.highlighted.hearted {
-  background: red;
-  border: 3px solid #AD0000;
-  border-left-color: #FFADAD;
-  border-top-color: #FFADAD;
 }
 td.mineNode.showSpace {
   background: gray;

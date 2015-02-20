@@ -1,6 +1,5 @@
 // Document event handlers
 var mouseDown = false;
-var showedHighlight = false;
 document.body.onmousedown = function(e) {
   if (!e.ctrlKey) {
     mouseDown = true;
@@ -45,7 +44,7 @@ var MineNode = React.createClass({
   },
   getDefaultProps: function() {
     return {
-      hearted: true,
+      active: true,
       nearbyMines: 0,
       isMine: false,
       showSpace: false,
@@ -56,11 +55,10 @@ var MineNode = React.createClass({
     var cx = React.addons.classSet;
     var classes = cx({
       'mineNode': true,
-      'highlighted': this.props.highlighted,
       'pressed': this.state.pressed,
       'showSpace': this.props.showSpace,
       'showValue': this.props.showValue,
-      'hearted': this.props.hearted,
+      'active': this.props.active,
       'one': this.props.nearbyMines == 1,
       'two': this.props.nearbyMines == 2,
       'three': this.props.nearbyMines == 3,
@@ -71,7 +69,7 @@ var MineNode = React.createClass({
       'eight': this.props.nearbyMines == 8,
     });
     var value = '';
-    if (this.props.showValue && this.props.hearted) {
+    if (this.props.showValue && this.props.active) {
       if (this.props.isMine) {
         if (this.props.showSpace) {
           value = '💔';
@@ -117,7 +115,7 @@ var MineGrid = React.createClass({
       var randomCol = getRandomInt(0, cols);
       if ((randomRow < row - 1 || randomRow > row + 1) || (randomCol < col - 1 || randomCol > col + 1)) {
         var randomMine = this.props.mines[randomRow][randomCol];
-        if (!randomMine.isMine && randomMine.hearted) {
+        if (!randomMine.isMine && randomMine.active) {
           randomMine.isMine = true;
           minesLeft--;
           continue;
@@ -162,7 +160,7 @@ var MineGrid = React.createClass({
       return spacesRevealed;
     }
   },
-  revealNonHearted: function() {
+  inactiveCount: function() {
     var rows = this.props.rows;
     var cols = this.props.cols;
     var mines = this.props.mines;
@@ -170,8 +168,7 @@ var MineGrid = React.createClass({
     for (var r = 0; r < rows; r++) {
       for (var c = 0; c < cols; c++) {
         var mine = mines[r][c];
-        if (!mine.hearted) {
-          mine.revealed = true;
+        if (!mine.active) {
           spacesRevealed ++;
         }
       }
@@ -184,7 +181,7 @@ var MineGrid = React.createClass({
       this.populate(row, col);
       var that = this;
       this.props.onGameStart(function() {
-        spacesRevealed = that.revealNonHearted();
+        spacesRevealed = that.inactiveCount();
         spacesRevealed += that.revealSpaces(row, col);
         that.props.onRevealSpaces(spacesRevealed);
         that.forceUpdate();
@@ -204,16 +201,14 @@ var MineGrid = React.createClass({
       var mineCols = new Array(cols);
       for (var c = 0; c < cols; c++) {
         var mine = this.props.mines[r][c];
-        var highlighted = c <= this.props.highlightCols - 1;
         var data = {
           key: c,
-          highlighted: highlighted,
           disabled: disabled,
           isMine: mine.isMine,
-          hearted: mine.hearted,
+          active: mine.active,
           nearbyMines: mine.nearbyMines,
-          showValue: (mine.isMine && (this.props.gameState == 'won' || this.props.gameState == 'lost')) || (mine.revealed && !(this.props.gameState == 'highlight' || this.props.gameState == 'new')),
-          showSpace: (mine.isMine && this.props.gameState == 'lost') || (mine.revealed && !(this.props.gameState == 'highlight' || this.props.gameState == 'new'))
+          showValue: (mine.isMine && (this.props.gameState == 'won' || this.props.gameState == 'lost')) || mine.revealed,
+          showSpace: (mine.isMine && this.props.gameState == 'lost') || mine.revealed
         }
         mineCols[c] = <MineNode {...data} row={r} col={c} onMineClick={this.handleMineClick} />;
       }
@@ -275,8 +270,7 @@ var MineButton = React.createClass({
       new: '😊',
       start: '😄',
       won: '😍',
-      lost: '😩',
-      highlight: '😘'
+      lost: '😩'
     };
     var imgSrc = imgSources[this.props.gameState];
     var cx = React.addons.classSet;
@@ -343,8 +337,7 @@ var MineSweeper = React.createClass({
       mines: this.newMines(),
       gameState: 'new',
       spaces: 0,
-      seconds: 0,
-      highlightCols: 0
+      seconds: 0
     };
   },
   handleRevealSpaces: function(spaces) {
@@ -357,46 +350,20 @@ var MineSweeper = React.createClass({
       this.setState({spaces: this.state.spaces - spaces});
     }
   },
-  highlightGrid: function(cb) {
-    var that = this;
-    var highlightInterval = setInterval(function() {
-      that.setState({
-        highlightCols: that.state.highlightCols + 1, 
-        gameState: 'highlight'
-      }, function() {
-        if (that.state.highlightCols == that.props.cols) {
-          clearInterval(highlightInterval);
-          setTimeout(function() {
-            that.setState({highlightCols: 0}, function() {
-              cb();
-            });
-          }, 0);
-        }
-      });
-    }, 500 / this.props.cols );
-  },
   handleGameStart: function(cb) {
     var that = this;
     var rows = this.props.rows;
     var cols = this.props.cols;
     var mineCount = this.props.mineCount;
-    var startGameFn = function() {
-      that.setState({
-        gameState: 'start',
-        spaces: rows * cols - mineCount
-      }, function() {
-        that.interval = setInterval(function() {
-          that.setState({seconds: that.state.seconds + 1});
-        }, 1000);
-        cb();
-      });
-    };
-    if (!showedHighlight) {
-      showedHighlight = true;
-      this.highlightGrid(startGameFn);
-    } else {
-      startGameFn();
-    }
+    this.setState({
+      gameState: 'start',
+      spaces: rows * cols - mineCount
+    }, function() {
+      that.interval = setInterval(function() {
+        that.setState({seconds: that.state.seconds + 1});
+      }, 1000);
+      cb();
+    });
   },
   handleGameLost: function() {
     clearInterval(this.interval);
@@ -414,17 +381,17 @@ var MineSweeper = React.createClass({
     for (var r = 0; r < rows; r++) {
       mines[r] = new Array(cols);
       for (var c = 0; c < cols; c++) {
-        var nonHearted = false;
+        var inactive = false;
         if (heartLims[r]) {
           var leftLim = heartLims[r][0];
           var rightLim = heartLims[r][1];
-          nonHearted = c < leftLim || c > rows - leftLim;
-          nonHearted = nonHearted || (c > rightLim && c < rows - rightLim);
+          inactive = c < leftLim || c > rows - leftLim;
+          inactive = inactive || (c > rightLim && c < rows - rightLim);
         }
         mines[r][c] = {
           nearbyMines: 0,
-          revealed: false,
-          hearted: !nonHearted,
+          revealed: inactive,
+          active: !inactive,
           isMine: false
         };
       }
@@ -446,7 +413,7 @@ var MineSweeper = React.createClass({
           <MineButton gameState={this.state.gameState} onButtonClick={this.handleButtonClick} />
           <Counter count={this.state.seconds} />
         </div>
-        <MineGrid ref="mineGrid" isGameStarted={this.isGameStarted} {...this.props} mines={this.state.mines} highlightCols={this.state.highlightCols} gameState={this.state.gameState} onGameStart={this.handleGameStart} onRevealSpaces={this.handleRevealSpaces} />
+        <MineGrid ref="mineGrid" isGameStarted={this.isGameStarted} {...this.props} mines={this.state.mines} gameState={this.state.gameState} onGameStart={this.handleGameStart} onRevealSpaces={this.handleRevealSpaces} />
       </div>
     );
   }

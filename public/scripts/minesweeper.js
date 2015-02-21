@@ -215,7 +215,7 @@ var MineGrid = React.createClass({
       mineRows[r] = <MineRow key={r} nodes={mineCols} />
     }
     return (
-      <table className="mineGrid unselectable">
+      <table className="mineGrid">
         <tbody>
           {mineRows}
         </tbody>
@@ -407,7 +407,7 @@ var MineSweeper = React.createClass({
   },
   render: function() {
     return (
-      <div className="mineBoard">
+      <div className="mineBoard unselectable">
         <div className="mineStatusBar">
           <Counter count={this.state.spaces} />
           <MineButton gameState={this.state.gameState} onButtonClick={this.handleButtonClick} />

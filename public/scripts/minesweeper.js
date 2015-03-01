@@ -289,6 +289,43 @@ var MineButton = React.createClass({
 });
 
 var LARGE_BOARD = {
+  mineCount: 110,
+  rows: 30,
+  cols: 31,
+  heartLims: [
+    [5, 10],
+    [4, 11],
+    [3, 12],
+    [2, 13],
+    [2, 13],
+    [1, 14],
+    [1, 14],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [1, 15],
+    [2, 15],
+    [3, 15],
+    [4, 15],
+    [5, 15],
+    [6, 15],
+    [7, 15],
+    [8, 15],
+    [9, 15],
+    [10, 15],
+    [11, 15],
+    [12, 15],
+    [13, 15],
+    [14, 15],
+    [15, 15]]
+}
+
+var MEDIUM_BOARD = {
   mineCount: 50,
   rows: 20,
   cols: 21,
@@ -313,7 +350,8 @@ var LARGE_BOARD = {
     [8, 10],
     [9, 10],
     [10, 10]]
-}
+};
+
 var SMALL_BOARD = {
   mineCount: 12,
   rows: 10,
@@ -329,7 +367,7 @@ var SMALL_BOARD = {
     [3, 5],
     [4, 5],
     [5, 5]]
-}
+};
 
 var MineSweeper = React.createClass({
   getInitialState: function() {

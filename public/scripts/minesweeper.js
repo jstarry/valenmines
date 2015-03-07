@@ -1,3 +1,5 @@
+'use strict';
+
 // Document event handlers
 var mouseDown = false;
 document.body.onmousedown = function(e) {
@@ -8,6 +10,88 @@ document.body.onmousedown = function(e) {
 document.body.onmouseup = function() {
   mouseDown = false;
 }
+
+// DATA
+var LARGE_BOARD = {
+  mineCount: 110,
+  rows: 30,
+  cols: 31,
+  heartLims: [
+    [5, 10],
+    [4, 11],
+    [3, 12],
+    [2, 13],
+    [2, 13],
+    [1, 14],
+    [1, 14],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [0, 15],
+    [1, 15],
+    [2, 15],
+    [3, 15],
+    [4, 15],
+    [5, 15],
+    [6, 15],
+    [7, 15],
+    [8, 15],
+    [9, 15],
+    [10, 15],
+    [11, 15],
+    [12, 15],
+    [13, 15],
+    [14, 15],
+    [15, 15]]
+};
+
+var MEDIUM_BOARD = {
+  mineCount: 50,
+  rows: 20,
+  cols: 21,
+  heartLims: [
+    [3, 7],
+    [2, 8],
+    [1, 9],
+    [1, 9],
+    [0, 10],
+    [0, 10],
+    [0, 10],
+    [0, 10],
+    [0, 10],
+    [1, 10],
+    [1, 10],
+    [2, 10],
+    [3, 10],
+    [4, 10],
+    [5, 10],
+    [6, 10],
+    [7, 10],
+    [8, 10],
+    [9, 10],
+    [10, 10]]
+};
+
+var SMALL_BOARD = {
+  mineCount: 12,
+  rows: 10,
+  cols: 11,
+  heartLims: [
+    [2, 3],
+    [1, 4],
+    [0, 5],
+    [0, 5],
+    [0, 5],
+    [1, 5],
+    [2, 5],
+    [3, 5],
+    [4, 5],
+    [5, 5]]
+};
 
 // Utilities
 function getRandomInt(min, max) {
@@ -288,87 +372,6 @@ var MineButton = React.createClass({
   }
 });
 
-var LARGE_BOARD = {
-  mineCount: 110,
-  rows: 30,
-  cols: 31,
-  heartLims: [
-    [5, 10],
-    [4, 11],
-    [3, 12],
-    [2, 13],
-    [2, 13],
-    [1, 14],
-    [1, 14],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [0, 15],
-    [1, 15],
-    [2, 15],
-    [3, 15],
-    [4, 15],
-    [5, 15],
-    [6, 15],
-    [7, 15],
-    [8, 15],
-    [9, 15],
-    [10, 15],
-    [11, 15],
-    [12, 15],
-    [13, 15],
-    [14, 15],
-    [15, 15]]
-}
-
-var MEDIUM_BOARD = {
-  mineCount: 50,
-  rows: 20,
-  cols: 21,
-  heartLims: [
-    [3, 7],
-    [2, 8],
-    [1, 9],
-    [1, 9],
-    [0, 10],
-    [0, 10],
-    [0, 10],
-    [0, 10],
-    [0, 10],
-    [1, 10],
-    [1, 10],
-    [2, 10],
-    [3, 10],
-    [4, 10],
-    [5, 10],
-    [6, 10],
-    [7, 10],
-    [8, 10],
-    [9, 10],
-    [10, 10]]
-};
-
-var SMALL_BOARD = {
-  mineCount: 12,
-  rows: 10,
-  cols: 11,
-  heartLims: [
-    [2, 3],
-    [1, 4],
-    [0, 5],
-    [0, 5],
-    [0, 5],
-    [1, 5],
-    [2, 5],
-    [3, 5],
-    [4, 5],
-    [5, 5]]
-};
-
 var MineSweeper = React.createClass({
   getInitialState: function() {
     return {
@@ -457,7 +460,74 @@ var MineSweeper = React.createClass({
   }
 });
 
+var LevelButton = React.createClass({
+  getInitialState: function() {
+    return {pressed: this.props.initialPressed};
+  },
+  handleOnClick: function() {
+    this.props.onSelect(this.props.level);
+  },
+  render: function() {
+    return (
+      <div className="levelButton" onClick={this.handleOnClick}>
+        {this.props.level}
+      </div>
+    );
+  }
+});
+
+var LevelSelector = React.createClass({
+  getInitialState: function() {
+    return {level: this.props.initialLevel};
+  },
+  handleOnSelect: function(level) {
+    this.props.onLevelSelect(level);
+  },
+  render: function() {
+    var data = this.props.data;
+    var numLevels = data.length;
+    var levelButtons = new Array(numLevels);
+    for (var i = 0; i < numLevels; i++) {
+      var selected = data[i] == this.state.level;
+      levelButtons[i] = <LevelButton key={i} level={data[i]} initialPressed={selected} onSelect={this.handleOnSelect} />;
+    }
+    return (
+      <div className="levelSelector">
+        {levelButtons}
+      </div>
+    );
+  },
+});
+
+var App = React.createClass({
+  getInitialState: function() {
+    return {
+      level: 'S'
+    };
+  },
+  getLevelBoard: function(level) {
+    if (level == 'S') return SMALL_BOARD;
+    if (level == 'M') return MEDIUM_BOARD;
+    if (level == 'L') return LARGE_BOARD;
+  },
+  handleLevelSelect: function(level) {
+    this.setState({level: level});
+  },
+  render: function() {
+    var levels = ['S', 'M', 'L'];
+    var levelBoard = this.getLevelBoard(this.state.level);
+    return (
+      <div className="app">
+        <div className="menu">
+          <LevelSelector data={levels} initialLevel={this.state.level} onLevelSelect={this.handleLevelSelect} />
+        </div>
+        <MineSweeper {...levelBoard}/>
+      </div>
+    );
+  }
+});
+
 React.render(
-  <MineSweeper {...LARGE_BOARD}/>,
+  <App />,
   document.getElementById('content')
 );

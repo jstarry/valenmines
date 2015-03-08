@@ -129,7 +129,7 @@ table.mineGrid {
   font-family: 'Nunito', sans-serif;
 }
 
-td.mineNode {
+td.mineCell {
   position: relative;
   height: 30px;
   width: 30px;
@@ -143,41 +143,44 @@ td.mineNode {
   box-sizing: border-box;
   text-align: center;
 }
-td.mineNode.showSpace.active {
-  background: #C0C0C0;
-}
-td.mineNode.showSpace {
+td.mineCell.inactive {
   background: gray;
   border: none;
   border-left: 2px solid #979797;
   border-top: 2px solid #979797;
 }
-td.mineNode.pressed {
+td.mineCell.clicked {
+  background: #C0C0C0;
+  border: none;
+  border-left: 2px solid #979797;
+  border-top: 2px solid #979797;
+}
+td.mineCell.pressed {
   border: 3px solid #999;
   border-right-color: #EEE;
   border-bottom-color: #EEE;
 }
-td.mineNode.one {
+td.mineCell.one {
   color: #0F0FFE;
 }
-td.mineNode.two {
+td.mineCell.two {
   color: #037903;
 }
-td.mineNode.three {
+td.mineCell.three {
   color: red;
 }
-td.mineNode.four {
+td.mineCell.four {
   color: #00007C;
 }
-td.mineNode.five {
+td.mineCell.five {
   color: #7C0505;
 }
-td.mineNode.six {
+td.mineCell.six {
   color: #147F7F;
 }
-td.mineNode.seven {
+td.mineCell.seven {
   color: black;
 }
-td.mineNode.eight {
+td.mineCell.eight {
   color: #999;
 }

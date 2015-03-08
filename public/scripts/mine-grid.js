@@ -12,7 +12,6 @@
  *   gameState: state of the game
  *
  * Callbacks:
- *   isGameStarted: check if game has started already
  *   onGameStart: start the game
  *   onRevealSpaces: report how many spaces were revealed
  *   onMineClick: mine was clicked
@@ -102,7 +101,7 @@ var MineGrid = React.createClass({
       this.forceUpdate();
     }.bind(this);
 
-    if (!this.props.isGameStarted()) {
+    if (this.props.gameState == 'new') {
       this.placeMines(row, col);
       this.countMines();
       this.props.onGameStart(revealSpaces);

@@ -129,54 +129,6 @@ var Counter = React.createClass({
   }
 });
 
-var MineButton = React.createClass({
-  getInitialState: function() {
-    return {
-      pressed: false
-    };
-  },
-  handleMouseEnter: function(e) {
-    if (mouseDown) {
-      this.setState({pressed: true});
-    }
-  },
-  handleMouseLeave: function(e) {
-    if (mouseDown) {
-      this.setState({pressed: false});
-    }
-  },
-  handleMouseDown: function(e) {
-    if (mouseDown) {
-      this.setState({pressed: true});
-    }
-  },
-  handleMouseUp: function(e) {
-      this.props.onButtonClick();
-      this.setState({pressed: false});
-  },
-  render: function() {
-    var imgSources = {
-      new: '😊',
-      start: '😄',
-      won: '😍',
-      lost: '😩'
-    };
-    var imgSrc = imgSources[this.props.gameState];
-    var cx = React.addons.classSet;
-    var classes = cx({
-      'mineButton': true,
-      'pressed': this.state.pressed,
-      'unselectable': true
-    });
-    return (
-      <div className={classes} onMouseUp={this.handleMouseUp} onMouseDown={this.handleMouseDown}
-            onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        <span>{imgSrc}</span>
-      </div>
-    );
-  }
-});
-
 var MineSweeper = React.createClass({
 
   getInitialState: function() {
@@ -272,10 +224,6 @@ var MineSweeper = React.createClass({
     this.replaceState(this.getInitialState());
   },
 
-  isGameStarted: function() {
-    return this.state.spaces != 0;
-  },
-
   render: function() {
     var gridProps = {
       rows: this.props.rows,
@@ -285,7 +233,6 @@ var MineSweeper = React.createClass({
       gameState: this.state.gameState
     };
     var gridCallbacks = {
-      isGameStarted: this.isGameStarted,
       onGameStart: this.handleGameStart,
       onRevealSpaces: this.handleRevealSpaces,
       onMineClick: this.handleMineClick
@@ -294,7 +241,7 @@ var MineSweeper = React.createClass({
       <div className="mineBoard unselectable">
         <div className="mineStatusBar">
           <Counter count={this.state.spaces} />
-          <MineButton gameState={this.state.gameState} onButtonClick={this.handleButtonClick} />
+          <GameStateButton gameState={this.state.gameState} onButtonClick={this.handleButtonClick} />
           <Counter count={this.state.seconds} />
         </div>
         <MineGrid ref="mineGrid" {...gridProps} {...gridCallbacks} />

@@ -15,9 +15,6 @@ var LevelButton = React.createClass({
 });
 
 var LevelSelector = React.createClass({
-  getInitialState: function() {
-    return {level: this.props.initialLevel};
-  },
   handleOnSelect: function(level) {
     this.props.onLevelSelect(level);
   },
@@ -26,7 +23,7 @@ var LevelSelector = React.createClass({
     var numLevels = data.length;
     var levelButtons = new Array(numLevels);
     for (var i = 0; i < numLevels; i++) {
-      var selected = data[i] == this.state.level;
+      var selected = data[i] == this.props.selectedLevel;
       levelButtons[i] = <LevelButton key={i} level={data[i]} initialPressed={selected} onSelect={this.handleOnSelect} />;
     }
     return (
@@ -43,23 +40,41 @@ var App = React.createClass({
       level: 'S'
     };
   },
+  getDefaultProps: function() {
+    return {
+      key: 1
+    };
+  },
   getLevelBoard: function(level) {
     if (level == 'S') return SMALL_BOARD;
     if (level == 'M') return MEDIUM_BOARD;
     if (level == 'L') return LARGE_BOARD;
   },
   handleLevelSelect: function(level) {
-    this.setState({level: level});
+    if (level == this.state.level) return;
+    this.props.key++;
+    this.replaceState({level: level});
   },
   render: function() {
     var levels = ['S', 'M', 'L'];
     var levelBoard = this.getLevelBoard(this.state.level);
+    var rows = levelBoard.rows;
+    var cols = levelBoard.cols;
+    var heartLims = levelBoard.heartLims;
+    var mineCount = levelBoard.mineCount;
+    var mineController = new MineController(rows, cols, heartLims, mineCount);
+    var mineSweeperProps = {
+      rows: rows,
+      cols: cols,
+      mineCount: mineCount,
+      mineController: mineController
+    };
     return (
-      <div className="app unselectable">
+      <div className="app unselectable" key={this.props.key}>
         <div className="menu">
-          <LevelSelector data={levels} initialLevel={this.state.level} onLevelSelect={this.handleLevelSelect} />
+          <LevelSelector data={levels} selectedLevel={this.state.level} onLevelSelect={this.handleLevelSelect} />
         </div>
-        <MineSweeper {...levelBoard}/>
+        <MineSweeper {...mineSweeperProps}/>
       </div>
     );
   }

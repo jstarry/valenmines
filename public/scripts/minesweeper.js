@@ -1,11 +1,10 @@
 'use strict';
 
 /**
- * Minesweeper
+ * MineSweeper
  *   Represents a minesweeper game.
  *
  * State:
- *   mines: 2D array of mine cells
  *   gameState: current state of game
  *   spaces: spaces left to click
  *   seconds: seconds elapsed
@@ -14,14 +13,19 @@
  *   rows: number of rows
  *   cols: number of columns
  *   mineCount: number of mines to be placed
- *   heartLims: data to determine if cells are active or not
+ *   mines: 2D array of mine cells
  */
 
 var MineSweeper = React.createClass({
 
+  getDefaultProps: function() {
+    return {
+      key: 1
+    };
+  },
+
   getInitialState: function() {
     return {
-      mines: this.newMines(),
       gameState: 'new',
       spaces: 0,
       seconds: 0
@@ -44,7 +48,7 @@ var MineSweeper = React.createClass({
     var rows = this.props.rows;
     var cols = this.props.cols;
     var mineCount = this.props.mineCount;
-    var inactiveCount = this.inactiveCount();
+    var inactiveCount = this.props.mineController.inactiveCount();
     this.setState({
       gameState: 'start',
       spaces: rows * cols - mineCount - inactiveCount
@@ -54,6 +58,10 @@ var MineSweeper = React.createClass({
       }, 1000);
       cb();
     });
+  },
+
+  componentWillUnmount: function() {
+    clearInterval(this.interval);
   },
 
   handleGameLost: function() {
@@ -66,49 +74,10 @@ var MineSweeper = React.createClass({
     this.setState({gameState: 'won'});
   },
 
-  inactiveCount: function() {
-    var rows = this.props.rows;
-    var cols = this.props.cols;
-    var mines = this.state.mines;
-    var inactiveCount = 0;
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < cols; c++) {
-        if (mines[r][c].inactive) {
-          inactiveCount++;
-        }
-      }
-    }
-    return inactiveCount;
-  },
-
-  newMines: function() {
-    var rows = this.props.rows;
-    var cols = this.props.cols;
-    var heartLims = this.props.heartLims;
-    var mines = new Array(rows);
-    for (var r = 0; r < rows; r++) {
-      mines[r] = new Array(cols);
-      for (var c = 0; c < cols; c++) {
-        var inactive = false;
-        if (heartLims[r]) {
-          var leftLim = heartLims[r][0];
-          var rightLim = heartLims[r][1];
-          inactive = c < leftLim || c > rows - leftLim;
-          inactive = inactive || (c > rightLim && c < rows - rightLim);
-        }
-        mines[r][c] = {
-          nearbyMines: 0,
-          revealed: false,
-          inactive: inactive,
-          isMine: false
-        };
-      }
-    }
-    return mines;
-  },
-
-  handleButtonClick: function() {
+  handleGameReset: function() {
     clearInterval(this.interval);
+    this.props.key++;
+    this.props.mineController.reset();
     this.replaceState(this.getInitialState());
   },
 
@@ -116,7 +85,7 @@ var MineSweeper = React.createClass({
     var gridProps = {
       rows: this.props.rows,
       cols: this.props.cols,
-      mines: this.state.mines,
+      mines: this.props.mineController.mines,
       mineCount: this.props.mineCount,
       gameState: this.state.gameState
     };
@@ -126,10 +95,10 @@ var MineSweeper = React.createClass({
       onMineClick: this.handleMineClick
     };
     return (
-      <div className="mineBoard">
+      <div className="mineBoard" key={this.props.key}>
         <div className="mineStatusBar">
           <Counter count={this.state.spaces} />
-          <GameStateButton gameState={this.state.gameState} onButtonClick={this.handleButtonClick} />
+          <GameStateButton gameState={this.state.gameState} onButtonClick={this.handleGameReset} />
           <Counter count={this.state.seconds} />
         </div>
         <MineGrid ref="mineGrid" {...gridProps} {...gridCallbacks} />

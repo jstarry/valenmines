@@ -16,7 +16,9 @@
  *   disabled: don't allow interaction
  *   revealed: show value
  *   clicked: show space
- *   onCellClick: callback to tell parent that a click happened
+ *
+ * Callbacks:
+ *   onCellClick: tell parent that a click happened
  */
 
 var MineCell = React.createClass({

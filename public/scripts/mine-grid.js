@@ -7,7 +7,15 @@
  * Properties:
  *   rows: number of rows in the grid
  *   cols: number of columns in the grid
+ *   mines: 2D array of mines
  *   mineCount: number of mines to be added to the grid
+ *   gameState: state of the game
+ *
+ * Callbacks:
+ *   isGameStarted: check if game has started already
+ *   onGameStart: start the game
+ *   onRevealSpaces: report how many spaces were revealed
+ *   onMineClick: mine was clicked
  */
 
 var MineGrid = React.createClass({
@@ -87,70 +95,63 @@ var MineGrid = React.createClass({
     }
   },
 
-  inactiveCount: function() {
-    var rows = this.props.rows;
-    var cols = this.props.cols;
-    var mines = this.props.mines;
-    var spacesRevealed = 0;
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < cols; c++) {
-        var mine = mines[r][c];
-        if (mine.inactive) {
-          spacesRevealed++;
-        }
-      }
-    }
-    return spacesRevealed;
-  },
-
   handleCellClick: function(row, col) {
-    var spacesRevealed = 0;
+    var revealSpaces = function() {
+      var spacesRevealed = this.revealSpaces(row, col);;
+      this.props.onRevealSpaces(spacesRevealed);
+      this.forceUpdate();
+    }.bind(this);
+
     if (!this.props.isGameStarted()) {
       this.placeMines(row, col);
       this.countMines();
-      var that = this;
-      this.props.onGameStart(function() {
-        spacesRevealed = that.inactiveCount();
-        spacesRevealed += that.revealSpaces(row, col);
-        that.props.onRevealSpaces(spacesRevealed);
-        that.forceUpdate();
-      });
+      this.props.onGameStart(revealSpaces);
     } else {
-      spacesRevealed += this.revealSpaces(row, col);
-      this.props.onRevealSpaces(spacesRevealed);
-      this.forceUpdate();
+      var mine = this.props.mines[row][col];
+      if (mine.isMine) {
+        this.props.onMineClick();
+      } else {
+        revealSpaces();
+      }
     }
   },
 
-  render: function() {
+  renderRows: function() {
     var rows = this.props.rows;
     var cols = this.props.cols;
     var mineRows = new Array(rows);
-    var disabled = this.props.gameState == 'won' || this.props.gameState == 'lost';
+    var gameWon = this.props.gameState == 'won';
+    var gameLost = this.props.gameState == 'lost';
+    var disabled = gameWon || gameLost;
+
     for (var r = 0; r < rows; r++) {
-      var mineCols = new Array(cols);
+      var mineCells = new Array(cols);
       for (var c = 0; c < cols; c++) {
         var mine = this.props.mines[r][c];
-        var data = {
-          key: c,
-          disabled: disabled,
+        var mineProps = {
+          row: r,
+          col: c,
           isMine: mine.isMine,
-          inactive: mine.inactive,
           nearbyMines: mine.nearbyMines,
-          revealed: (mine.isMine && (this.props.gameState == 'won' || this.props.gameState == 'lost')) || mine.revealed,
-          clicked: (mine.isMine && this.props.gameState == 'lost') || mine.revealed
+          inactive: mine.inactive,
+          disabled: disabled,
+          revealed: mine.revealed || (mine.isMine && disabled),
+          clicked: mine.revealed || (mine.isMine && gameLost)
         }
-        mineCols[c] = <MineCell {...data} row={r} col={c} onCellClick={this.handleCellClick} />;
+        mineCells[c] = <MineCell key={c} {...mineProps} onCellClick={this.handleCellClick} />;
       }
-      mineRows[r] = <MineRow key={r} cells={mineCols} />
+      mineRows[r] = <MineRow key={r} cells={mineCells} />
     }
+    return mineRows;
+  },
+
+  render: function() {
     return (
       <table className="mineGrid">
         <tbody>
-          {mineRows}
+          {this.renderRows()}
         </tbody>
       </table>
     );
   }
 });
-

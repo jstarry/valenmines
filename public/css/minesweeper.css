@@ -36,6 +36,14 @@ body, html {
   height: 30px;
 }
 
+.main {
+  float: left;
+}
+
+.scores {
+  float: right;
+}
+
 .levelSelector {
   float: left;
 }

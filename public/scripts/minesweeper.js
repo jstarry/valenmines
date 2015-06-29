@@ -70,6 +70,7 @@ var MineSweeper = React.createClass({
   },
 
   handleGameWon:  function() {
+    this.props.server.saveScore(this.props.level, this.state.seconds);
     clearInterval(this.interval);
     this.setState({gameState: 'won'});
   },

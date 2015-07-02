@@ -1,4 +1,4 @@
-var LevelButton = React.createClass({
+var LevelButton = React.createClass({displayName: "LevelButton",
   getInitialState: function() {
     return {pressed: this.props.initialPressed};
   },
@@ -7,14 +7,14 @@ var LevelButton = React.createClass({
   },
   render: function() {
     return (
-      <div className="levelButton" onClick={this.handleOnClick}>
-        {this.props.level}
-      </div>
+      React.createElement("div", {className: "levelButton", onClick: this.handleOnClick}, 
+        this.props.level
+      )
     );
   }
 });
 
-var LevelSelector = React.createClass({
+var LevelSelector = React.createClass({displayName: "LevelSelector",
   handleOnSelect: function(level) {
     this.props.onLevelSelect(level);
   },
@@ -24,46 +24,46 @@ var LevelSelector = React.createClass({
     var levelButtons = new Array(numLevels);
     for (var i = 0; i < numLevels; i++) {
       var selected = data[i] == this.props.selectedLevel;
-      levelButtons[i] = <LevelButton key={i} level={data[i]} initialPressed={selected} onSelect={this.handleOnSelect} />;
+      levelButtons[i] = React.createElement(LevelButton, {key: i, level: data[i], initialPressed: selected, onSelect: this.handleOnSelect});
     }
     return (
-      <div className="levelSelector">
-        {levelButtons}
-      </div>
+      React.createElement("div", {className: "levelSelector"}, 
+        levelButtons
+      )
     );
   },
 });
 
-var LoginButton = React.createClass({
+var LoginButton = React.createClass({displayName: "LoginButton",
   render: function() {
     if (this.props.loggedIn) {
       return (
-        <button className="twitter" onClick={this.props.onLogout}>
-          Sign out
-        </button>
+        React.createElement("button", {className: "twitter", onClick: this.props.onLogout}, 
+          "Sign out"
+        )
       );
     } else {
       return (
-        <button className="twitter" onClick={this.props.onLogin}>
-          Sign in
-        </button>
+        React.createElement("button", {className: "twitter", onClick: this.props.onLogin}, 
+          "Sign in"
+        )
       );
     }
   }
 });
 
-var Score = React.createClass({
+var Score = React.createClass({displayName: "Score",
   render: function() {
     return (
-      <div className="score">
-        <span className="username">{this.props.username}</span>
-        <span className="score">{this.props.score}</span>
-      </div>
+      React.createElement("div", {className: "score"}, 
+        React.createElement("span", {className: "username"}, this.props.username), 
+        React.createElement("span", {className: "score"}, this.props.score)
+      )
     );
   }
 });
 
-var Highscores = React.createClass({
+var Highscores = React.createClass({displayName: "Highscores",
   getInitialState: function() {
     return {
       highscores: null
@@ -96,23 +96,23 @@ var Highscores = React.createClass({
       var scores = new Array(numScores);
       for (var i = 0; i < numScores; i++) {
         score = highscores[i];
-        scores[i] = <Score key={i * this.id} username={score.username} score={score.score}/>;
+        scores[i] = React.createElement(Score, {key: i * this.id, username: score.username, score: score.score});
       }
       this.id += 100;
       return (
-        <div className="scores">
-          {scores}
-        </div>
+        React.createElement("div", {className: "scores"}, 
+          scores
+        )
       );
     } else {
       return (
-        <span>Nothing</span>
+        React.createElement("span", null, "Nothing")
       );
     }
   }
 });
 
-var App = React.createClass({
+var App = React.createClass({displayName: "App",
   getInitialState: function() {
     return {
       level: 'S',
@@ -166,21 +166,21 @@ var App = React.createClass({
       level: this.state.level
     };
     return (
-      <div className="app unselectable" key={this.props.key}>
-        <div className="main">
-          <div className="menu">
-            <LevelSelector data={levels} selectedLevel={this.state.level} onLevelSelect={this.handleLevelSelect} />
-            <LoginButton loggedIn={this.props.server.loggedIn()} onLogin={this.handleLogin} onLogout={this.handleLogout}/>
-          </div>
-          <MineSweeper {...mineSweeperProps}/>
-        </div>
-        <Highscores level={this.state.level} server={this.props.server}/>
-      </div>
+      React.createElement("div", {className: "app unselectable", key: this.props.key}, 
+        React.createElement("div", {className: "main"}, 
+          React.createElement("div", {className: "menu"}, 
+            React.createElement(LevelSelector, {data: levels, selectedLevel: this.state.level, onLevelSelect: this.handleLevelSelect}), 
+            React.createElement(LoginButton, {loggedIn: this.props.server.loggedIn(), onLogin: this.handleLogin, onLogout: this.handleLogout})
+          ), 
+          React.createElement(MineSweeper, React.__spread({},  mineSweeperProps))
+        ), 
+        React.createElement(Highscores, {level: this.state.level, server: this.props.server})
+      )
     );
   }
 });
 
 React.render(
-  <App />,
+  React.createElement(App, null),
   document.getElementById('content')
 );

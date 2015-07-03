@@ -60,10 +60,6 @@ var MineSweeper = React.createClass({displayName: "MineSweeper",
     });
   },
 
-  componentWillUnmount: function() {
-    clearInterval(this.interval);
-  },
-
   handleGameLost: function() {
     clearInterval(this.interval);
     this.setState({gameState: 'lost'});
@@ -82,12 +78,15 @@ var MineSweeper = React.createClass({displayName: "MineSweeper",
     this.replaceState(this.getInitialState());
   },
 
+  componentWillUnmount: function() {
+    clearInterval(this.interval);
+  },
+
   render: function() {
     var gridProps = {
       rows: this.props.rows,
       cols: this.props.cols,
-      mines: this.props.mineController.mines,
-      mineCount: this.props.mineCount,
+      mineController: this.props.mineController,
       gameState: this.state.gameState
     };
     var gridCallbacks = {
@@ -102,7 +101,7 @@ var MineSweeper = React.createClass({displayName: "MineSweeper",
           React.createElement(GameStateButton, {gameState: this.state.gameState, onButtonClick: this.handleGameReset}), 
           React.createElement(Counter, {count: this.state.seconds})
         ), 
-        React.createElement(MineGrid, React.__spread({ref: "mineGrid"},  gridProps,  gridCallbacks))
+        React.createElement(MineGrid, React.__spread({},  gridProps,  gridCallbacks))
       )
     );
   }

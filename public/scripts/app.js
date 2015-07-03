@@ -83,8 +83,8 @@ var Highscores = React.createClass({
         });
       }
       highscores.sort(function(a, b) {
-        return a.score > b.score;
-      })
+        return a.score - b.score;
+      });
       that.setState({highscores: highscores});
     });
   },

@@ -55,7 +55,7 @@ var MineGrid = React.createClass({
       var mineCells = new Array(cols);
       for (var c = 0; c < cols; c++) {
         var mine = this.props.mineController.get(r, c);
-        mineCells[c] = createEl(MineCell, {key: c,  mine: mine, gameState: this.props.gameState, onCellClick: this.handleCellClick});
+        mineCells[c] = createEl(MineCell, {key: c,  mine: mine, onCellClick: this.handleCellClick});
       }
       mineRows[r] = createEl(MineRow, {key: r, cells: mineCells});
     }

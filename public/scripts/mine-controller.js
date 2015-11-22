@@ -98,6 +98,7 @@ MineController.prototype.addMineCount = function() {
 MineController.prototype.setGameWon = function() {
   for (var r = 0; r < this.rows; r++) {
     for (var c = 0; c < this.cols; c++) {
+      this.mines[r][c].disabled = true;
       if (this.mines[r][c].isMine) {
         this.mines[r][c].revealed = true;
       }
@@ -108,7 +109,9 @@ MineController.prototype.setGameWon = function() {
 MineController.prototype.setGameLost = function() {
   for (var r = 0; r < this.rows; r++) {
     for (var c = 0; c < this.cols; c++) {
+      this.mines[r][c].disabled = true;
       if (this.mines[r][c].isMine) {
+        this.mines[r][c].revealed = true;
         this.mines[r][c].clicked = true;
       }
     }

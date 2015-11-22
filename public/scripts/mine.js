@@ -8,4 +8,5 @@ var Mine = function(row, col, inactive) {
   this.nearbyMines = 0;
   this.revealed = false;
   this.clicked = false;
+  this.disabled = false;
 };

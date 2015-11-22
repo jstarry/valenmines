@@ -42,8 +42,9 @@ var MineSweeper = React.createClass({
   handleRevealSpaces: function(spaces) {
     if (spaces == this.state.spaces) {
       this.handleGameWon();
+    } else {
+      this.setState({spaces: this.state.spaces - spaces});
     }
-    this.setState({spaces: this.state.spaces - spaces});
   },
 
   handleGameStart: function(cb) {
@@ -70,10 +71,10 @@ var MineSweeper = React.createClass({
   },
 
   handleGameWon:  function() {
-    this.props.server.saveScore(this.props.level, this.state.seconds);
     clearInterval(this.interval);
     this.props.mineController.setGameWon();
-    this.setState({gameState: 'won'});
+    this.setState({spaces: 0, gameState: 'won'});
+    this.props.server.saveScore(this.props.level, this.state.seconds);
   },
 
   handleGameReset: function() {

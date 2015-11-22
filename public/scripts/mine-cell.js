@@ -54,12 +54,8 @@ var MineCell = React.createClass({
     }
   },
 
-  isGameOver: function() {
-    return this.props.gameState == 'won' || this.props.gameState == 'lost';
-  },
-
   eventsDisabled: function() {
-    return this.isGameOver() || this.props.mine.inactive || this.props.mine.revealed;
+    return this.props.mine.inactive || this.props.mine.disabled || this.props.mine.revealed;
   },
 
   renderValue: function() {
@@ -71,7 +67,7 @@ var MineCell = React.createClass({
         } else {
           value = '💖';
         }
-      } else if (this.props.mine.nearbyCount > 0) {
+      } else if (this.props.mine.nearbyMines > 0) {
         value = this.props.mine.nearbyMines;
       }
     }

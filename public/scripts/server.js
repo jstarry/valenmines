@@ -12,11 +12,17 @@ var Server = function() {
 };
 
 Server.prototype.saveScore = function(level, score) {
-  this.scores.child(level).push({
-    user: this.uid,
-    username: this.username,
-    score: score
-  });
+  if (!this.uid) {
+    alert('Sign in to save your score!');
+    this.savedScore = score;
+    this.savedLevel = level;
+  } else {
+    this.scores.child(level).push({
+      user: this.uid,
+      username: this.username,
+      score: score
+    });
+  }
 };
 
 Server.prototype.getUser = function() {
@@ -52,6 +58,10 @@ Server.prototype.login = function(callback) {
         by: authData.twitter.username,
         pic: authData.twitter.cachedUserProfile.profile_image_url
       });
+      if (this.savedScore) {
+        this.saveScore(this.savedLevel, this.savedScore);
+        this.savedScore = undefined;
+      }
       callback();
     }
   });

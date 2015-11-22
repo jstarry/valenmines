@@ -1,5 +1,8 @@
 'use strict';
 
+var dom = React.DOM;
+var createEl = React.createElement.bind(React);
+
 /**
  * MineGrid
  *   Represents a grid of mine cells.
@@ -44,22 +47,6 @@ var MineGrid = React.createClass({
     }
   },
 
-  mineProps: function(mine, row, col, state) {
-    var gameWon = this.props.gameState == 'won';
-    var gameLost = this.props.gameState == 'lost';
-    var disabled = gameWon || gameLost;
-    return {
-      row: row,
-      col: col,
-      isMine: mine.isMine,
-      nearbyMines: mine.nearbyMines,
-      inactive: mine.inactive,
-      disabled: disabled,
-      revealed: mine.revealed || (mine.isMine && disabled),
-      clicked: mine.revealed || (mine.isMine && gameLost)
-    };
-  },
-
   renderRows: function() {
     var rows = this.props.rows;
     var cols = this.props.cols;
@@ -68,21 +55,17 @@ var MineGrid = React.createClass({
       var mineCells = new Array(cols);
       for (var c = 0; c < cols; c++) {
         var mine = this.props.mineController.get(r, c);
-        var mineProps = this.mineProps(mine, r, c, this.props.gameState);
-        mineCells[c] = <MineCell key={c} {...mineProps} onCellClick={this.handleCellClick} />;
+        mineCells[c] = createEl(MineCell, {key: c,  mine: mine, gameState: this.props.gameState, onCellClick: this.handleCellClick});
       }
-      mineRows[r] = <MineRow key={r} cells={mineCells} />
+      mineRows[r] = createEl(MineRow, {key: r, cells: mineCells});
     }
     return mineRows;
   },
 
   render: function() {
     return (
-      <table className="mineGrid">
-        <tbody>
-          {this.renderRows()}
-        </tbody>
-      </table>
+      dom.table({className: 'mineGrid'},
+        dom.tbody({}, this.renderRows()))
     );
   }
 });

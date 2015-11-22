@@ -1,5 +1,7 @@
 'use strict';
 
+var dom = React.DOM;
+
 /**
  * Counter
  *   Represents a cell in the mine grid.
@@ -15,11 +17,8 @@ var Counter = React.createClass({
       value = '0' + value;
     }
     return (
-      <div className="counter">
-        <span>
-           {value}
-        </span>
-      </div>
+      dom.div({className: 'counter'},
+        dom.span({}, value))
     );
   }
 });

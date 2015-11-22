@@ -1,5 +1,8 @@
 'use strict';
 
+var dom = React.DOM;
+var createEl = React.createElement.bind(React);
+
 /**
  * MineSweeper
  *   Represents a minesweeper game.
@@ -62,12 +65,14 @@ var MineSweeper = React.createClass({
 
   handleGameLost: function() {
     clearInterval(this.interval);
+    this.props.mineController.setGameLost();
     this.setState({gameState: 'lost'});
   },
 
   handleGameWon:  function() {
     this.props.server.saveScore(this.props.level, this.state.seconds);
     clearInterval(this.interval);
+    this.props.mineController.setGameWon();
     this.setState({gameState: 'won'});
   },
 
@@ -87,22 +92,18 @@ var MineSweeper = React.createClass({
       rows: this.props.rows,
       cols: this.props.cols,
       mineController: this.props.mineController,
-      gameState: this.state.gameState
-    };
-    var gridCallbacks = {
+      gameState: this.state.gameState,
       onGameStart: this.handleGameStart,
       onRevealSpaces: this.handleRevealSpaces,
       onMineClick: this.handleMineClick
     };
     return (
-      <div className="mineBoard" key={this.props.key}>
-        <div className="mineStatusBar">
-          <Counter count={this.state.spaces} />
-          <GameStateButton gameState={this.state.gameState} onButtonClick={this.handleGameReset} />
-          <Counter count={this.state.seconds} />
-        </div>
-        <MineGrid {...gridProps} {...gridCallbacks} />
-      </div>
+      dom.div({className: 'mineBoard', key: this.props.key},
+        dom.div({className: 'mineStatusBar'},
+          createEl(Counter, {count: this.state.spaces}),
+          createEl(GameStateButton, {gameState: this.state.gameState, onButtonClick: this.handleGameReset}),
+          createEl(Counter, {count: this.state.seconds})),
+        createEl(MineGrid, gridProps))
     );
   }
 });

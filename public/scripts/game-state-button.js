@@ -1,5 +1,8 @@
 'use strict';
 
+var dom = React.DOM;
+var createEl = React.createElement.bind(React);
+
 /**
  * GameStateButton
  *   Represents the button that controls game state.
@@ -55,11 +58,17 @@ var GameStateButton = React.createClass({
       'pressed': this.state.pressed
     });
 
+    var buttonProps = {
+      className: classes,
+      onMouseUp: this.handleMouseUp,
+      onMouseDown: this.handleMouseDown,
+      onMouseEnter: this.handleMouseEnter,
+      onMouseLeave: this.handleMouseLeave
+    };
+
     return (
-      <div className={classes} onMouseUp={this.handleMouseUp} onMouseDown={this.handleMouseDown}
-            onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        <span>{emoji}</span>
-      </div>
+      dom.div(buttonProps,
+        dom.span({}, emoji))
     );
   }
 });

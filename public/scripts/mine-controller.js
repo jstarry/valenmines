@@ -1,3 +1,5 @@
+'use strict';
+
 var MineController = function(rows, cols, heartLims, mineCount) {
   this.rows = rows;
   this.cols = cols;
@@ -18,12 +20,7 @@ MineController.prototype.reset = function() {
         inactive = c < leftLim || c > this.rows - leftLim;
         inactive = inactive || (c > rightLim && c < this.rows - rightLim);
       }
-      this.mines[r][c] = {
-        nearbyMines: 0,
-        revealed: false,
-        inactive: inactive,
-        isMine: false
-      };
+      this.mines[r][c] = new Mine(r, c, inactive)
     }
   }
 };
@@ -63,6 +60,7 @@ MineController.prototype.floodFill = function(row, col) {
   } else {
     var spacesRevealed = 1;
     mine.revealed = true;
+    mine.clicked = true;
 
     // Recurse if no mines are nearby
     if (mine.nearbyMines == 0) {
@@ -82,19 +80,39 @@ MineController.prototype.floodFill = function(row, col) {
 };
 
 MineController.prototype.addMineCount = function() {
-    for (var r = 0; r < this.rows; r++) {
-      for (var c = 0; c < this.cols; c++) {
-        if (this.mines[r][c].isMine) {
-          for (var r1 = Math.max(0, r - 1); r1 < Math.min(this.rows, r + 2); r1++) {
-            for (var c1 = Math.max(0, c - 1); c1 < Math.min(this.cols, c + 2); c1++) {
-              if (r1 != r || c1 != c) {
-                this.mines[r1][c1].nearbyMines++;
-              }
+  for (var r = 0; r < this.rows; r++) {
+    for (var c = 0; c < this.cols; c++) {
+      if (this.mines[r][c].isMine) {
+        for (var r1 = Math.max(0, r - 1); r1 < Math.min(this.rows, r + 2); r1++) {
+          for (var c1 = Math.max(0, c - 1); c1 < Math.min(this.cols, c + 2); c1++) {
+            if (r1 != r || c1 != c) {
+              this.mines[r1][c1].nearbyMines++;
             }
           }
         }
       }
     }
+  }
+};
+
+MineController.prototype.setGameWon = function() {
+  for (var r = 0; r < this.rows; r++) {
+    for (var c = 0; c < this.cols; c++) {
+      if (this.mines[r][c].isMine) {
+        this.mines[r][c].revealed = true;
+      }
+    }
+  }
+};
+
+MineController.prototype.setGameLost = function() {
+  for (var r = 0; r < this.rows; r++) {
+    for (var c = 0; c < this.cols; c++) {
+      if (this.mines[r][c].isMine) {
+        this.mines[r][c].clicked = true;
+      }
+    }
+  }
 };
 
 MineController.prototype.inactiveCount = function() {

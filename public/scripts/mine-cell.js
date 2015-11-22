@@ -1,5 +1,8 @@
 'use strict';
 
+var dom = React.DOM;
+var createEl = React.createElement.bind(React);
+
 /**
  * MineCell
  *   Represents a cell in the mine grid.
@@ -47,52 +50,62 @@ var MineCell = React.createClass({
   handleMouseUp: function(e) {
     if (!this.eventsDisabled()) {
       this.setState({pressed: false});
-      this.props.onCellClick(this.props.row, this.props.col);
+      this.props.onCellClick(this.props.mine.row, this.props.mine.col);
     }
   },
 
+  isGameOver: function() {
+    return this.props.gameState == 'won' || this.props.gameState == 'lost';
+  },
+
   eventsDisabled: function() {
-    return this.props.inactive || this.props.disabled || this.props.clicked;
+    return this.isGameOver() || this.props.mine.inactive || this.props.mine.revealed;
   },
 
   renderValue: function() {
     var value = '';
-    if (this.props.revealed) {
-      if (this.props.isMine) {
-        if (this.props.clicked) {
+    if (this.props.mine.revealed) {
+      if (this.props.mine.isMine) {
+        if (this.props.mine.clicked) {
           value = '💔';
         } else {
           value = '💖';
         }
-      } else if (this.props.nearbyMines > 0) {
-        value = this.props.nearbyMines;
+      } else if (this.props.mine.nearbyCount > 0) {
+        value = this.props.mine.nearbyMines;
       }
     }
     return value;
   },
 
   render: function() {
+    var nearbyMines = this.props.mine.nearbyMines;
     var classes = React.addons.classSet({
       'mineCell': true,
-      'inactive': this.props.inactive,
+      'inactive': this.props.mine.inactive,
       'pressed': this.state.pressed,
-      'clicked': this.props.clicked,
-      'revealed': this.props.revealed,
-      'one': this.props.nearbyMines == 1,
-      'two': this.props.nearbyMines == 2,
-      'three': this.props.nearbyMines == 3,
-      'four': this.props.nearbyMines == 4,
-      'five': this.props.nearbyMines == 5,
-      'six': this.props.nearbyMines == 6,
-      'seven': this.props.nearbyMines == 7,
-      'eight': this.props.nearbyMines == 8,
+      'clicked': this.props.mine.clicked,
+      'one': nearbyMines == 1,
+      'two': nearbyMines == 2,
+      'three': nearbyMines == 3,
+      'four': nearbyMines == 4,
+      'five': nearbyMines == 5,
+      'six': nearbyMines == 6,
+      'seven': nearbyMines == 7,
+      'eight': nearbyMines == 8,
     });
 
+    var cellProps = {
+      className: classes,
+      onMouseUp: this.handleMouseUp,
+      onMouseDown: this.handleMouseDown,
+      onMouseEnter: this.handleMouseEnter,
+      onMouseLeave: this.handleMouseLeave
+    };
+
     return (
-      <td className={classes} onMouseUp={this.handleMouseUp} onMouseDown={this.handleMouseDown}
-            onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-        <span>{this.renderValue()}</span>
-      </td>
+      dom.td(cellProps,
+        dom.span({}, this.renderValue()))
     );
   }
 });

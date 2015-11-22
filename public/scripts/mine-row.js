@@ -1,5 +1,7 @@
 'use strict';
 
+var dom = React.DOM;
+
 /**
  * MineRow
  *   Represents a row in the mine grid, it holds many mine cells
@@ -11,9 +13,7 @@
 var MineRow = React.createClass({
   render: function() {
     return (
-      <tr className="mineRow">
-          {this.props.cells}
-      </tr>
+      dom.tr({className: 'mineRow'}, this.props.cells)
     );
   }
 }); 

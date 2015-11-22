@@ -1,3 +1,8 @@
+'use strict';
+
+var dom = React.DOM;
+var createEl = React.createElement.bind(React);
+
 var LevelButton = React.createClass({
   getInitialState: function() {
     return {pressed: this.props.initialPressed};
@@ -7,9 +12,8 @@ var LevelButton = React.createClass({
   },
   render: function() {
     return (
-      <div className="levelButton" onClick={this.handleOnClick}>
-        {this.props.level}
-      </div>
+      dom.div({className: 'levelButton', onClick: this.handleOnClick},
+        dom.span({}, this.props.level))
     );
   }
 });
@@ -24,12 +28,10 @@ var LevelSelector = React.createClass({
     var levelButtons = new Array(numLevels);
     for (var i = 0; i < numLevels; i++) {
       var selected = data[i] == this.props.selectedLevel;
-      levelButtons[i] = <LevelButton key={i} level={data[i]} initialPressed={selected} onSelect={this.handleOnSelect} />;
+      levelButtons[i] = createEl(LevelButton, {key: i, level: data[i], initialPressed: selected, onSelect: this.handleOnSelect});
     }
     return (
-      <div className="levelSelector">
-        {levelButtons}
-      </div>
+      dom.div({className: 'levelSelector'}, levelButtons)
     );
   },
 });
@@ -38,15 +40,11 @@ var LoginButton = React.createClass({
   render: function() {
     if (this.props.loggedIn) {
       return (
-        <button className="twitter" onClick={this.props.onLogout}>
-          Sign out
-        </button>
+        dom.button({className: 'twitter', onClick: this.props.onLogout}, 'Sign Out')
       );
     } else {
       return (
-        <button className="twitter" onClick={this.props.onLogin}>
-          Sign in
-        </button>
+        dom.button({className: 'twitter', onClick: this.props.onLogin}, 'Sign In')
       );
     }
   }
@@ -55,10 +53,9 @@ var LoginButton = React.createClass({
 var Score = React.createClass({
   render: function() {
     return (
-      <div className="score">
-        <span className="username">{this.props.username}</span>
-        <span className="score">{this.props.score}</span>
-      </div>
+      dom.div({className: 'score'},
+        dom.span({className: 'username'}, this.props.username),
+        dom.span({className: 'score'}, this.props.score))
     );
   }
 });
@@ -95,18 +92,16 @@ var Highscores = React.createClass({
       var numScores = highscores.length;
       var scores = new Array(numScores);
       for (var i = 0; i < numScores; i++) {
-        score = highscores[i];
-        scores[i] = <Score key={i * this.id} username={score.username} score={score.score}/>;
+        var score = highscores[i];
+        scores[i] = createEl(Score, {key: (i * this.id), username: score.username, score: score.score});
       }
       this.id += 100;
       return (
-        <div className="scores">
-          {scores}
-        </div>
+        dom.div({className: 'scores', scores})
       );
     } else {
       return (
-        <span>Nothing</span>
+        dom.span({}, 'Nothing')
       );
     }
   }
@@ -166,21 +161,18 @@ var App = React.createClass({
       level: this.state.level
     };
     return (
-      <div className="app unselectable" key={this.props.key}>
-        <div className="main">
-          <div className="menu">
-            <LevelSelector data={levels} selectedLevel={this.state.level} onLevelSelect={this.handleLevelSelect} />
-            <LoginButton loggedIn={this.props.server.loggedIn()} onLogin={this.handleLogin} onLogout={this.handleLogout}/>
-          </div>
-          <MineSweeper {...mineSweeperProps}/>
-        </div>
-        <Highscores level={this.state.level} server={this.props.server}/>
-      </div>
+      dom.div({className: 'app unselectable', key: this.props.key},
+        dom.div({className: 'main'},
+          dom.div({className: 'menu'},
+            createEl(LevelSelector, {data: levels, selectedLevel: this.state.level, onLevelSelect: this.handleLevelSelect}),
+            createEl(LoginButton, {loggedIn: this.props.server.loggedIn(), onLogin: this.handleLogin, onLogout: this.handleLogout})),
+          createEl(MineSweeper, mineSweeperProps)),
+        createEl(Highscores, {level: this.state.level, server: this.props.server}))
     );
   }
 });
 
 React.render(
-  <App />,
+  createEl(App, {}),
   document.getElementById('content')
 );
